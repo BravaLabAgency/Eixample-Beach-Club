@@ -5,17 +5,18 @@ import { beachClubCopy } from "@/lib/beachClubContent";
 import { isLanguage, languages, type Language } from "@/lib/constants";
 
 type PageProps = {
-  params: {
+  params: Promise<{
     lang: string;
-  };
+  }>;
 };
 
 export function generateStaticParams() {
   return languages.map((language) => ({ lang: language.code }));
 }
 
-export function generateMetadata({ params }: PageProps): Metadata {
-  const lang = isLanguage(params.lang) ? params.lang : "es";
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { lang: paramLang } = await params;
+  const lang = isLanguage(paramLang) ? paramLang : "es";
   const copy = beachClubCopy[lang];
 
   return {
@@ -41,12 +42,14 @@ export function generateMetadata({ params }: PageProps): Metadata {
   };
 }
 
-export default function HomePage({ params }: PageProps) {
-  if (!isLanguage(params.lang)) {
+export default async function HomePage({ params }: PageProps) {
+  const { lang: paramLang } = await params;
+
+  if (!isLanguage(paramLang)) {
     notFound();
   }
 
-  const lang = params.lang as Language;
+  const lang = paramLang as Language;
 
   return <BeachClubPage lang={lang} copy={beachClubCopy[lang]} />;
 }
