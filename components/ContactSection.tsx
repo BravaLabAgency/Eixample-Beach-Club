@@ -1,4 +1,3 @@
-import { Mail } from "lucide-react";
 import { ButtonLink } from "@/components/ButtonLink";
 import { Container } from "@/components/Container";
 import { SectionHeading } from "@/components/SectionHeading";
@@ -14,7 +13,7 @@ const inputClass =
 
 export function ContactSection({ dict }: ContactSectionProps) {
   return (
-    <section id="contact" className="py-16 sm:py-20 lg:py-24">
+    <section id="contact" className="scroll-mt-32 py-16 sm:py-20 lg:scroll-mt-36 lg:py-24">
       <Container>
         <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
           <div>
@@ -91,9 +90,6 @@ export function ContactSection({ dict }: ContactSectionProps) {
               />
             </label>
             <div className="flex flex-col gap-3 pt-2 sm:flex-row">
-              <ButtonLink href={mailtoHref} icon={Mail}>
-                {dict.common.email}
-              </ButtonLink>
               <ButtonLink href={mailtoHref} variant="secondary">
                 {dict.common.cta}
               </ButtonLink>
