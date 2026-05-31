@@ -3,20 +3,20 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://examplebeachclub.example"),
-  title: "Eixample Beach Club | Mediterranean lifestyle destination",
+  title: "Eixample Beach Club | Destino mediterráneo de estilo de vida",
   description:
-    "A fictional premium Mediterranean beach club with reservations, gastronomy, sunset sessions, DJs and an immersive lifestyle website.",
+    "Beach club mediterráneo ficticio con reservas premium, gastronomía, sesiones al atardecer, DJs y una experiencia digital inmersiva.",
   icons: {
     icon: "/beach-club/mark.svg",
     apple: "/beach-club/mark.svg"
   },
   keywords: [
     "beach club premium",
-    "mediterranean beach club",
-    "vip cabanas",
-    "sunset sessions",
-    "luxury hospitality",
-    "premium reservations"
+    "beach club mediterráneo",
+    "cabañas VIP",
+    "sesiones al atardecer",
+    "hospitalidad de lujo",
+    "reservas premium"
   ]
 };
 

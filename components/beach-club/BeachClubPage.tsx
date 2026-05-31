@@ -262,8 +262,8 @@ export function BeachClubPage({ lang, copy, view = "home" }: BeachClubPageProps)
       </div>
 
       <div className="hero-marquee" aria-hidden="true">
-        <span>Sea · Music · Food · Sunset · Energy · </span>
-        <span>Sea · Music · Food · Sunset · Energy · </span>
+        <span>{copy.common.marquee}</span>
+        <span>{copy.common.marquee}</span>
       </div>
     </section>
   );
@@ -298,20 +298,7 @@ export function BeachClubPage({ lang, copy, view = "home" }: BeachClubPageProps)
 
   const reservationsSection = (
     <section id="reservations" className="reservations-section">
-      <div className="section-intro reservations-intro" data-reveal>
-        <video
-          className="reservations-intro-video"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          poster={copy.hero.poster}
-          aria-hidden="true"
-        >
-          <source src={copy.hero.video} type="video/mp4" />
-        </video>
-        <div className="reservations-intro-scrim" aria-hidden="true" />
+      <div className="section-intro" data-reveal>
         <p className="bc-eyebrow">{copy.reservations.label}</p>
         <h2>{copy.reservations.title}</h2>
         <p>{copy.reservations.intro}</p>
@@ -480,7 +467,7 @@ export function BeachClubPage({ lang, copy, view = "home" }: BeachClubPageProps)
             </div>
           ))}
         </div>
-        <div className="cocktail-strip" aria-label="Cocktails">
+        <div className="cocktail-strip" aria-label={copy.common.cocktails}>
           {copy.gastronomy.cocktails.map((cocktail) => (
             <span key={cocktail}>
               <Wine aria-hidden="true" />
