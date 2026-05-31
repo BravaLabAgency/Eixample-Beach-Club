@@ -48,7 +48,6 @@ export type BeachClubCopy = {
     events: string;
     book: string;
     discover: string;
-    concierge: string;
   };
   nav: NavItem[];
   hero: {
@@ -122,7 +121,8 @@ export type BeachClubCopy = {
     schedule: string;
     contact: string;
     mapTitle: string;
-    mapSrc: string;
+    mapEmbedSrc: string;
+    mapLink: string;
     finalCta: string;
   };
   footer: {
@@ -133,12 +133,15 @@ export type BeachClubCopy = {
 
 const heroVideo = "/beach-club/hero-video.mp4";
 
-const mapSrc =
-  "https://maps.google.com/maps?q=Passeig%20de%20Gracia%2092%2C%20Eixample%2C%20Barcelona&t=&z=15&ie=UTF8&iwloc=&output=embed";
+const mapAddress = "Carrer d'Aragó 284, L'Eixample, Barcelona";
+const mapEmbedSrc =
+  "https://maps.google.com/maps?q=Carrer%20d%27Arag%C3%B3%20284%2C%20L%27Eixample%2C%20Barcelona&t=&z=16&ie=UTF8&iwloc=&output=embed";
+const mapLink =
+  "https://www.google.com/maps/search/?api=1&query=Carrer%20d%27Arag%C3%B3%20284%2C%20L%27Eixample%2C%20Barcelona";
 
 const es: BeachClubCopy = {
   metadata: {
-    title: "Example Beach Club | Mediterranean lifestyle destination",
+    title: "Eixample Beach Club | Mediterranean lifestyle destination",
     description:
       "Beach club mediterráneo ficticio con reservas premium, gastronomía, sunset sessions, DJs y una experiencia digital inmersiva.",
     keywords: [
@@ -151,23 +154,21 @@ const es: BeachClubCopy = {
     ]
   },
   common: {
-    brand: "Example Beach Club",
+    brand: "Eixample Beach Club",
     menu: "Menú",
     close: "Cerrar",
     language: "Idioma",
     reserve: "Reservar",
     events: "Eventos",
     book: "Elegir escena",
-    discover: "Descubrir",
-    concierge: "Concierge"
+    discover: "Descubrir"
   },
   nav: [
     { label: "Experiencia", href: "experience" },
     { label: "Reservas", href: "reservations" },
     { label: "Eventos", href: "events" },
     { label: "Gastronomía", href: "gastronomy" },
-    { label: "Galería", href: "gallery" },
-    { label: "Contacto", href: "location" }
+    { label: "Contacto", href: "contact" }
   ],
   hero: {
     eyebrow: "Mediterráneo privado · Temporada 2026",
@@ -176,7 +177,7 @@ const es: BeachClubCopy = {
     video: heroVideo,
     poster: "/beach-club/hero-beach-club.png",
     filmLabel: "Sunset film",
-    location: "Cala Example · Costa Mediterránea",
+    location: "Eixample · Barcelona",
     ritual: "Sunset ritual · 18:42"
   },
   experience: {
@@ -381,11 +382,12 @@ const es: BeachClubCopy = {
   location: {
     label: "Ubicación",
     title: "Una dirección urbana en Eixample con alma mediterránea.",
-    address: "Passeig de Gràcia 92 · Eixample, Barcelona",
+    address: mapAddress,
     schedule: "Todos los días · 10:00 - 02:00",
     contact: "+34 600 000 000 · bravalabagency@gmail.com",
-    mapTitle: "Mapa de Example Beach Club en Eixample",
-    mapSrc,
+    mapTitle: "Mapa de Eixample Beach Club en Eixample",
+    mapEmbedSrc,
+    mapLink,
     finalCta: "Reservar antes del sunset"
   },
   footer: {
@@ -414,8 +416,7 @@ const ca: BeachClubCopy = {
     { label: "Reserves", href: "reservations" },
     { label: "Esdeveniments", href: "events" },
     { label: "Gastronomia", href: "gastronomy" },
-    { label: "Galeria", href: "gallery" },
-    { label: "Contacte", href: "location" }
+    { label: "Contacte", href: "contact" }
   ],
   hero: {
     ...es.hero,
@@ -495,7 +496,7 @@ const ca: BeachClubCopy = {
     ...es.location,
     label: "Ubicació",
     title: "Una adreça urbana a l'Eixample amb ànima mediterrània.",
-    mapTitle: "Mapa d'Example Beach Club a l'Eixample",
+    mapTitle: "Mapa d'Eixample Beach Club a l'Eixample",
     schedule: "Cada dia · 10:00 - 02:00",
     finalCta: "Reservar abans del sunset"
   }
@@ -522,15 +523,14 @@ const en: BeachClubCopy = {
     { label: "Reservations", href: "reservations" },
     { label: "Events", href: "events" },
     { label: "Gastronomy", href: "gastronomy" },
-    { label: "Gallery", href: "gallery" },
-    { label: "Contact", href: "location" }
+    { label: "Contact", href: "contact" }
   ],
   hero: {
     ...es.hero,
     eyebrow: "Private Mediterranean · Season 2026",
     title: "Daylight by the sea. Nightfall with a pulse.",
     subtitle: "Sunbeds, coastal cuisine, cold cocktails and guest DJs in a cove designed to make you stay.",
-    location: "Cala Example · Mediterranean Coast",
+    location: "Eixample · Barcelona",
     ritual: "Sunset ritual · 18:42"
   },
   experience: {
@@ -633,9 +633,9 @@ const en: BeachClubCopy = {
     ...es.location,
     label: "Location",
     title: "An Eixample address with a Mediterranean pulse.",
-    address: "Passeig de Gracia 92 · Eixample, Barcelona",
+    address: mapAddress,
     schedule: "Every day · 10:00 - 02:00",
-    mapTitle: "Map of Example Beach Club in Eixample",
+    mapTitle: "Map of Eixample Beach Club in Eixample",
     finalCta: "Reserve before sunset"
   }
 };
@@ -661,15 +661,14 @@ const fr: BeachClubCopy = {
     { label: "Réservations", href: "reservations" },
     { label: "Événements", href: "events" },
     { label: "Gastronomie", href: "gastronomy" },
-    { label: "Galerie", href: "gallery" },
-    { label: "Contact", href: "location" }
+    { label: "Contact", href: "contact" }
   ],
   hero: {
     ...es.hero,
     eyebrow: "Méditerranée privée · Saison 2026",
     title: "Le jour face à la mer. La nuit avec son propre rythme.",
     subtitle: "Sunbeds, cuisine côtière, cocktails frais et DJs invités dans une crique faite pour rester.",
-    location: "Cala Example · Côte méditerranéenne",
+    location: "Eixample · Barcelone",
     ritual: "Rituel sunset · 18:42"
   },
   experience: {
@@ -772,9 +771,9 @@ const fr: BeachClubCopy = {
     ...es.location,
     label: "Localisation",
     title: "Une adresse à l'Eixample avec une âme méditerranéenne.",
-    address: "Passeig de Gracia 92 · Eixample, Barcelone",
+    address: "Carrer d'Aragó 284, L'Eixample, Barcelone",
     schedule: "Tous les jours · 10:00 - 02:00",
-    mapTitle: "Carte d'Example Beach Club à l'Eixample",
+    mapTitle: "Carte d'Eixample Beach Club à l'Eixample",
     finalCta: "Réserver avant le sunset"
   }
 };

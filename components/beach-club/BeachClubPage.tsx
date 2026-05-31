@@ -1,14 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
   CalendarDays,
   Check,
   Clock,
-  Languages,
   MapPin,
   Menu,
   Music,
@@ -23,9 +22,12 @@ import {
 import { contactEmail, languages, type Language } from "@/lib/constants";
 import type { BeachClubCopy } from "@/lib/beachClubContent";
 
+export type BeachClubView = "home" | "experience" | "reservations" | "events" | "gastronomy" | "contact";
+
 type BeachClubPageProps = {
   lang: Language;
   copy: BeachClubCopy;
+  view?: BeachClubView;
 };
 
 const fragmentIcons = [Waves, Music, Utensils, Sun];
@@ -41,7 +43,11 @@ function getMaxCapacity(capacity: string) {
   return Math.max(...matches.map(Number));
 }
 
-export function BeachClubPage({ lang, copy }: BeachClubPageProps) {
+function pageHref(lang: Language, view: BeachClubView) {
+  return view === "home" ? `/${lang}` : `/${lang}/${view}`;
+}
+
+export function BeachClubPage({ lang, copy, view = "home" }: BeachClubPageProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(copy.reservations.items[1].id);
   const [guests, setGuests] = useState(2);
@@ -50,10 +56,9 @@ export function BeachClubPage({ lang, copy }: BeachClubPageProps) {
   const [occasion, setOccasion] = useState(copy.booking.occasions[0]);
   const [bookingMessage, setBookingMessage] = useState("");
   const [gastronomyOpen, setGastronomyOpen] = useState(false);
-  const [mapZoom, setMapZoom] = useState(1);
 
   const navItems = useMemo(
-    () => copy.nav.map((item) => ({ ...item, href: `/${lang}#${item.href}` })),
+    () => copy.nav.map((item) => ({ ...item, href: pageHref(lang, item.href as BeachClubView) })),
     [copy.nav, lang]
   );
 
@@ -64,6 +69,13 @@ export function BeachClubPage({ lang, copy }: BeachClubPageProps) {
   useEffect(() => {
     setGuests((currentGuests) => Math.min(Math.max(currentGuests, 1), maxGuests));
   }, [maxGuests]);
+
+  useEffect(() => {
+    if (!window.location.hash) {
+      window.history.scrollRestoration = "manual";
+      window.requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0 }));
+    }
+  }, [view, lang]);
 
   useEffect(() => {
     const reveals = document.querySelectorAll<HTMLElement>("[data-reveal]");
@@ -195,8 +207,7 @@ export function BeachClubPage({ lang, copy }: BeachClubPageProps) {
   }, []);
 
   function handleLanguageChange(nextLang: string) {
-    const hash = window.location.hash || "#home";
-    window.location.href = `/${nextLang}${hash}`;
+    window.location.href = pageHref(nextLang as Language, view);
   }
 
   function chooseReservation(id: string) {
@@ -209,21 +220,349 @@ export function BeachClubPage({ lang, copy }: BeachClubPageProps) {
     setBookingMessage(copy.booking.success);
   }
 
+  const heroSection = (
+    <section id="home" className="bc-hero" aria-label={copy.common.brand}>
+      <div className="hero-video-shell" aria-hidden="true">
+        <video
+          className="hero-video"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster={copy.hero.poster}
+        >
+          <source src={copy.hero.video} type="video/mp4" />
+        </video>
+        <Image src={copy.hero.poster} alt="" fill priority sizes="100vw" className="hero-poster" />
+      </div>
+      <div className="hero-scrim" aria-hidden="true" />
+
+      <div className="hero-layout">
+        <div className="hero-copy" data-reveal>
+          <p className="bc-eyebrow">{copy.hero.eyebrow}</p>
+          <h1>{copy.hero.title}</h1>
+          <p>{copy.hero.subtitle}</p>
+          <div className="hero-actions">
+            <a className="bc-button primary" href={pageHref(lang, "reservations")}>
+              {copy.common.reserve}
+              <ArrowRight aria-hidden="true" />
+            </a>
+            <a className="bc-button ghost" href={pageHref(lang, "events")}>
+              {copy.common.events}
+            </a>
+          </div>
+        </div>
+
+        <aside className="hero-status" data-reveal>
+          <span>{copy.hero.filmLabel}</span>
+          <strong>{copy.hero.ritual}</strong>
+          <p>{copy.hero.location}</p>
+        </aside>
+      </div>
+
+      <div className="hero-marquee" aria-hidden="true">
+        <span>Sea · Music · Food · Sunset · Energy · </span>
+        <span>Sea · Music · Food · Sunset · Energy · </span>
+      </div>
+    </section>
+  );
+
+  const experienceSection = (
+    <section id="experience" className="experience-section">
+      <div className="experience-copy" data-reveal>
+        <p className="bc-eyebrow">{copy.experience.label}</p>
+        <h2>{copy.experience.title}</h2>
+        <p>{copy.experience.microcopy}</p>
+      </div>
+
+      <div className="experience-fragments">
+        {copy.experience.fragments.map((fragment, index) => {
+          const Icon = fragmentIcons[index % fragmentIcons.length];
+          return (
+            <article key={fragment.word} className={`fragment fragment-${index}`} data-reveal>
+              <div className="fragment-image" data-parallax="0.035">
+                <Image src={fragment.image} alt={fragment.alt} fill sizes="(min-width: 900px) 30vw, 82vw" />
+              </div>
+              <div className="fragment-text">
+                <Icon aria-hidden="true" />
+                <h3>{fragment.word}</h3>
+                <p>{fragment.line}</p>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+
+  const reservationsSection = (
+    <section id="reservations" className="reservations-section">
+      <div className="section-intro" data-reveal>
+        <p className="bc-eyebrow">{copy.reservations.label}</p>
+        <h2>{copy.reservations.title}</h2>
+        <p>{copy.reservations.intro}</p>
+      </div>
+
+      <div className="reservation-lab" data-reveal>
+        <div className="reservation-options" role="tablist" aria-label={copy.reservations.label}>
+          {copy.reservations.items.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={item.id === selectedReservation}
+              className={item.id === selectedReservation ? "is-active" : ""}
+              onClick={() => chooseReservation(item.id)}
+            >
+              <span>{item.label}</span>
+              <strong>{item.name}</strong>
+              <small>
+                {item.price}
+                <ArrowRight aria-hidden="true" />
+              </small>
+            </button>
+          ))}
+        </div>
+
+        <div className="reservation-stage">
+          <Image
+            key={activeReservation.image}
+            src={activeReservation.image}
+            alt={activeReservation.alt}
+            fill
+            sizes="(min-width: 1100px) 58vw, 100vw"
+            priority={false}
+          />
+          <div className="reservation-stage-copy">
+            <span>{activeReservation.capacity}</span>
+            <h3>{activeReservation.name}</h3>
+            <p>{activeReservation.mood}</p>
+            <ul>
+              {activeReservation.inclusions.map((inclusion) => (
+                <li key={inclusion}>
+                  <Check aria-hidden="true" />
+                  {inclusion}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <form className="booking-console" onSubmit={submitBooking}>
+          <div className="console-title">
+            <Sparkles aria-hidden="true" />
+            <div>
+              <span>{copy.booking.title}</span>
+              <strong>{activeReservation.price}</strong>
+            </div>
+          </div>
+
+          <label>
+            <span>
+              <CalendarDays aria-hidden="true" />
+              {copy.booking.date}
+            </span>
+            <input type="date" value={date} onChange={(event) => setDate(event.target.value)} />
+          </label>
+
+          <label>
+            <span>
+              <Clock aria-hidden="true" />
+              {copy.booking.time}
+            </span>
+            <input type="time" value={time} onChange={(event) => setTime(event.target.value)} />
+          </label>
+
+          <label>
+            <span>
+              <Users aria-hidden="true" />
+              {copy.booking.guests}
+            </span>
+            <input
+              type="number"
+              min={1}
+              max={maxGuests}
+              value={guests}
+              onChange={(event) => {
+                const nextGuests = Number(event.target.value);
+                setGuests(Math.min(Math.max(nextGuests, 1), maxGuests));
+              }}
+            />
+          </label>
+
+          <label>
+            <span>
+              <Sun aria-hidden="true" />
+              {copy.booking.occasion}
+            </span>
+            <select value={occasion} onChange={(event) => setOccasion(event.target.value)}>
+              {copy.booking.occasions.map((item) => (
+                <option key={item}>{item}</option>
+              ))}
+            </select>
+          </label>
+
+          <button type="submit">
+            {copy.booking.request}
+            <ArrowRight aria-hidden="true" />
+          </button>
+
+          {bookingMessage ? (
+            <p className="booking-message" role="status">
+              {bookingMessage} {activeReservation.name} · {guests} · {date} · {time} · {occasion}
+            </p>
+          ) : null}
+        </form>
+      </div>
+    </section>
+  );
+
+  const eventsSection = (
+    <section id="events" className="events-section">
+      <div className="events-header" data-reveal>
+        <p className="bc-eyebrow">{copy.events.label}</p>
+        <h2>{copy.events.title}</h2>
+        <a href={`mailto:${contactEmail}?subject=${encodeURIComponent(copy.events.cta)}`}>
+          {copy.events.cta}
+          <ArrowUpRight aria-hidden="true" />
+        </a>
+      </div>
+
+      <div className="event-track" aria-label={copy.events.title}>
+        {copy.events.items.map((event, index) => (
+          <article key={event.name} className="event-panel" data-reveal>
+            <div className="event-number">{String(index + 1).padStart(2, "0")}</div>
+            <Image src={event.image} alt={event.alt} fill sizes="(min-width: 900px) 44vw, 84vw" />
+            <div className="event-info">
+              <span>{event.tag}</span>
+              <h3>{event.name}</h3>
+              <p>{event.artist}</p>
+              <div>
+                <small>{event.date}</small>
+                <small>{event.time}</small>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+
+  const gastronomySection = (
+    <section id="gastronomy" className="gastronomy-section">
+      <div className="gastronomy-media" data-reveal data-parallax="0.025">
+        <Image src={copy.gastronomy.image} alt={copy.gastronomy.alt} fill sizes="(min-width: 900px) 50vw, 100vw" />
+      </div>
+      <div className="gastronomy-copy" data-reveal>
+        <p className="bc-eyebrow">{copy.gastronomy.label}</p>
+        <h2>{copy.gastronomy.title}</h2>
+        <p>{copy.gastronomy.line}</p>
+        <div className="menu-preview">
+          {copy.gastronomy.menu.slice(0, 3).map((item) => (
+            <div key={item.name}>
+              <span>{item.type}</span>
+              <strong>{item.name}</strong>
+              <em>{item.price}</em>
+            </div>
+          ))}
+        </div>
+        <div className="cocktail-strip" aria-label="Cocktails">
+          {copy.gastronomy.cocktails.map((cocktail) => (
+            <span key={cocktail}>
+              <Wine aria-hidden="true" />
+              {cocktail}
+            </span>
+          ))}
+        </div>
+        <button type="button" className="gastronomy-trigger" onClick={() => setGastronomyOpen(true)}>
+          {copy.gastronomy.explore}
+          <ArrowUpRight aria-hidden="true" />
+        </button>
+      </div>
+    </section>
+  );
+
+  const gallerySection = (
+    <section id="gallery" className="gallery-section gallery-section-plain" aria-label={copy.gallery.label}>
+      <div className="editorial-gallery">
+        {copy.gallery.items.map((item, index) => (
+          <figure key={`${item.title}-${index}`} className={`gallery-frame gallery-${index}`} data-reveal>
+            <Image src={item.image} alt={item.alt} fill sizes="(min-width: 900px) 34vw, 90vw" />
+          </figure>
+        ))}
+      </div>
+    </section>
+  );
+
+  const locationSection = (
+    <section id="contact" className="location-section">
+      <div className="location-copy" data-reveal>
+        <p className="bc-eyebrow">{copy.location.label}</p>
+        <h2>{copy.location.title}</h2>
+        <div className="contact-stack">
+          <p>
+            <MapPin aria-hidden="true" />
+            {copy.location.address}
+          </p>
+          <p>
+            <Clock aria-hidden="true" />
+            {copy.location.schedule}
+          </p>
+          <p>
+            <ArrowUpRight aria-hidden="true" />
+            {copy.location.contact}
+          </p>
+        </div>
+        <a className="bc-button primary" href={pageHref(lang, "reservations")}>
+          {copy.location.finalCta}
+          <ArrowRight aria-hidden="true" />
+        </a>
+      </div>
+      <div className="map-shell" data-reveal aria-label={copy.location.mapTitle}>
+        <iframe
+          className="google-map"
+          src={copy.location.mapEmbedSrc}
+          title={copy.location.mapTitle}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          allowFullScreen
+        />
+        <div className="map-controls">
+          <a href={copy.location.mapLink} target="_blank" rel="noreferrer">
+            Google Maps
+            <ArrowUpRight aria-hidden="true" />
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+
+  const visibleSections =
+    view === "home"
+      ? [heroSection, experienceSection, gallerySection, locationSection]
+      : {
+          experience: [experienceSection],
+          reservations: [reservationsSection],
+          events: [eventsSection],
+          gastronomy: [gastronomySection],
+          contact: [locationSection]
+        }[view];
+
   return (
     <div className="beach-page">
       <header className="bc-header">
-        <a href={`/${lang}#home`} className="bc-mark" aria-label={copy.common.brand}>
+        <a href={pageHref(lang, "home")} className="bc-mark" aria-label={copy.common.brand}>
           <span>EB</span>
           <small>Club</small>
         </a>
 
-        <a href={`/${lang}#home`} className="bc-wordmark" aria-label={copy.common.brand}>
+        <a href={pageHref(lang, "home")} className="bc-wordmark" aria-label={copy.common.brand}>
           {copy.common.brand}
         </a>
 
         <div className="bc-nav-actions">
           <div className="language-switch" aria-label={copy.common.language}>
-            <Languages aria-hidden="true" />
             {languages.map((language) => (
               <button
                 key={language.code}
@@ -235,7 +574,7 @@ export function BeachClubPage({ lang, copy }: BeachClubPageProps) {
               </button>
             ))}
           </div>
-          <a className="reserve-chip" href={`/${lang}#reservations`}>
+          <a className="reserve-chip" href={pageHref(lang, "reservations")}>
             {copy.common.reserve}
           </a>
           <button
@@ -263,349 +602,17 @@ export function BeachClubPage({ lang, copy }: BeachClubPageProps) {
             </a>
           ))}
         </nav>
-        <div className="screen-menu-bottom">
-          <div className="mobile-language-switch" aria-label={copy.common.language}>
-            {languages.map((language) => (
-              <button
-                key={language.code}
-                type="button"
-                className={language.code === lang ? "is-active" : ""}
-                onClick={() => handleLanguageChange(language.code)}
-              >
-                {language.short}
-              </button>
-            ))}
-          </div>
-          <a href={`mailto:${contactEmail}`}>{copy.common.concierge}</a>
-        </div>
       </div>
 
       <main>
-        <section id="home" className="bc-hero" aria-label={copy.common.brand}>
-          <div className="hero-video-shell" aria-hidden="true">
-            <video
-              className="hero-video"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              poster={copy.hero.poster}
-            >
-              <source src={copy.hero.video} type="video/mp4" />
-            </video>
-            <Image src={copy.hero.poster} alt="" fill priority sizes="100vw" className="hero-poster" />
-          </div>
-          <div className="hero-scrim" aria-hidden="true" />
-
-          <div className="hero-layout">
-            <div className="hero-copy" data-reveal>
-              <p className="bc-eyebrow">{copy.hero.eyebrow}</p>
-              <h1>{copy.hero.title}</h1>
-              <p>{copy.hero.subtitle}</p>
-              <div className="hero-actions">
-                <a className="bc-button primary" href={`/${lang}#reservations`}>
-                  {copy.common.reserve}
-                  <ArrowRight aria-hidden="true" />
-                </a>
-                <a className="bc-button ghost" href={`/${lang}#events`}>
-                  {copy.common.events}
-                </a>
-              </div>
-            </div>
-
-            <aside className="hero-status" data-reveal>
-              <span>{copy.hero.filmLabel}</span>
-              <strong>{copy.hero.ritual}</strong>
-              <p>{copy.hero.location}</p>
-            </aside>
-          </div>
-
-          <div className="hero-marquee" aria-hidden="true">
-            <span>Sea · Music · Food · Sunset · Energy · </span>
-            <span>Sea · Music · Food · Sunset · Energy · </span>
-          </div>
-        </section>
-
-        <section id="experience" className="experience-section">
-          <div className="experience-copy" data-reveal>
-            <p className="bc-eyebrow">{copy.experience.label}</p>
-            <h2>{copy.experience.title}</h2>
-            <p>{copy.experience.microcopy}</p>
-          </div>
-
-          <div className="experience-fragments">
-            {copy.experience.fragments.map((fragment, index) => {
-              const Icon = fragmentIcons[index % fragmentIcons.length];
-              return (
-                <article key={fragment.word} className={`fragment fragment-${index}`} data-reveal>
-                  <div className="fragment-image" data-parallax="0.035">
-                    <Image src={fragment.image} alt={fragment.alt} fill sizes="(min-width: 900px) 30vw, 82vw" />
-                  </div>
-                  <div className="fragment-text">
-                    <Icon aria-hidden="true" />
-                    <h3>{fragment.word}</h3>
-                    <p>{fragment.line}</p>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        </section>
-
-        <section id="reservations" className="reservations-section">
-          <div className="section-intro" data-reveal>
-            <p className="bc-eyebrow">{copy.reservations.label}</p>
-            <h2>{copy.reservations.title}</h2>
-            <p>{copy.reservations.intro}</p>
-          </div>
-
-          <div className="reservation-lab" data-reveal>
-            <div className="reservation-options" role="tablist" aria-label={copy.reservations.label}>
-              {copy.reservations.items.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={item.id === selectedReservation}
-                  className={item.id === selectedReservation ? "is-active" : ""}
-                  onClick={() => chooseReservation(item.id)}
-                >
-                  <span>{item.label}</span>
-                  <strong>{item.name}</strong>
-                  <small>
-                    {item.price}
-                    <ArrowRight aria-hidden="true" />
-                  </small>
-                </button>
-              ))}
-            </div>
-
-            <div className="reservation-stage">
-              <Image
-                key={activeReservation.image}
-                src={activeReservation.image}
-                alt={activeReservation.alt}
-                fill
-                sizes="(min-width: 1100px) 58vw, 100vw"
-                priority={false}
-              />
-              <div className="reservation-stage-copy">
-                <span>{activeReservation.capacity}</span>
-                <h3>{activeReservation.name}</h3>
-                <p>{activeReservation.mood}</p>
-                <ul>
-                  {activeReservation.inclusions.map((inclusion) => (
-                    <li key={inclusion}>
-                      <Check aria-hidden="true" />
-                      {inclusion}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <form className="booking-console" onSubmit={submitBooking}>
-              <div className="console-title">
-                <Sparkles aria-hidden="true" />
-                <div>
-                  <span>{copy.booking.title}</span>
-                  <strong>{activeReservation.price}</strong>
-                </div>
-              </div>
-
-              <label>
-                <span>
-                  <CalendarDays aria-hidden="true" />
-                  {copy.booking.date}
-                </span>
-                <input type="date" value={date} onChange={(event) => setDate(event.target.value)} />
-              </label>
-
-              <label>
-                <span>
-                  <Clock aria-hidden="true" />
-                  {copy.booking.time}
-                </span>
-                <input type="time" value={time} onChange={(event) => setTime(event.target.value)} />
-              </label>
-
-              <label>
-                <span>
-                  <Users aria-hidden="true" />
-                  {copy.booking.guests}
-                </span>
-                <input
-                  type="number"
-                  min={1}
-                  max={maxGuests}
-                  value={guests}
-                  onChange={(event) => {
-                    const nextGuests = Number(event.target.value);
-                    setGuests(Math.min(Math.max(nextGuests, 1), maxGuests));
-                  }}
-                />
-              </label>
-
-              <label>
-                <span>
-                  <Sun aria-hidden="true" />
-                  {copy.booking.occasion}
-                </span>
-                <select value={occasion} onChange={(event) => setOccasion(event.target.value)}>
-                  {copy.booking.occasions.map((item) => (
-                    <option key={item}>{item}</option>
-                  ))}
-                </select>
-              </label>
-
-              <button type="submit">
-                {copy.booking.request}
-                <ArrowRight aria-hidden="true" />
-              </button>
-
-              {bookingMessage ? (
-                <p className="booking-message" role="status">
-                  {bookingMessage} {activeReservation.name} · {guests} · {date} · {time} · {occasion}
-                </p>
-              ) : null}
-            </form>
-          </div>
-        </section>
-
-        <section id="events" className="events-section">
-          <div className="events-header" data-reveal>
-            <p className="bc-eyebrow">{copy.events.label}</p>
-            <h2>{copy.events.title}</h2>
-            <a href={`mailto:${contactEmail}?subject=${encodeURIComponent(copy.events.cta)}`}>
-              {copy.events.cta}
-              <ArrowUpRight aria-hidden="true" />
-            </a>
-          </div>
-
-          <div className="event-track" aria-label={copy.events.title}>
-            {copy.events.items.map((event, index) => (
-              <article key={event.name} className="event-panel" data-reveal>
-                <div className="event-number">{String(index + 1).padStart(2, "0")}</div>
-                <Image src={event.image} alt={event.alt} fill sizes="(min-width: 900px) 44vw, 84vw" />
-                <div className="event-info">
-                  <span>{event.tag}</span>
-                  <h3>{event.name}</h3>
-                  <p>{event.artist}</p>
-                  <div>
-                    <small>{event.date}</small>
-                    <small>{event.time}</small>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section id="gastronomy" className="gastronomy-section">
-          <div className="gastronomy-media" data-reveal data-parallax="0.025">
-            <Image src={copy.gastronomy.image} alt={copy.gastronomy.alt} fill sizes="(min-width: 900px) 50vw, 100vw" />
-          </div>
-          <div className="gastronomy-copy" data-reveal>
-            <p className="bc-eyebrow">{copy.gastronomy.label}</p>
-            <h2>{copy.gastronomy.title}</h2>
-            <p>{copy.gastronomy.line}</p>
-            <div className="menu-preview">
-              {copy.gastronomy.menu.slice(0, 3).map((item) => (
-                <div key={item.name}>
-                  <span>{item.type}</span>
-                  <strong>{item.name}</strong>
-                  <em>{item.price}</em>
-                </div>
-              ))}
-            </div>
-            <div className="cocktail-strip" aria-label="Cocktails">
-              {copy.gastronomy.cocktails.map((cocktail) => (
-                <span key={cocktail}>
-                  <Wine aria-hidden="true" />
-                  {cocktail}
-                </span>
-              ))}
-            </div>
-            <button type="button" className="gastronomy-trigger" onClick={() => setGastronomyOpen(true)}>
-              {copy.gastronomy.explore}
-              <ArrowUpRight aria-hidden="true" />
-            </button>
-          </div>
-        </section>
-
-        <section id="gallery" className="gallery-section">
-          <div className="gallery-heading" data-reveal>
-            <p className="bc-eyebrow">{copy.gallery.label}</p>
-            <h2>{copy.gallery.title}</h2>
-          </div>
-          <div className="editorial-gallery">
-            {copy.gallery.items.map((item, index) => (
-              <figure key={`${item.title}-${index}`} className={`gallery-frame gallery-${index}`} data-reveal>
-                <Image src={item.image} alt={item.alt} fill sizes="(min-width: 900px) 34vw, 90vw" />
-                <figcaption>{item.title}</figcaption>
-              </figure>
-            ))}
-          </div>
-        </section>
-
-        <section id="location" className="location-section">
-          <div className="location-copy" data-reveal>
-            <p className="bc-eyebrow">{copy.location.label}</p>
-            <h2>{copy.location.title}</h2>
-            <div className="contact-stack">
-              <p>
-                <MapPin aria-hidden="true" />
-                {copy.location.address}
-              </p>
-              <p>
-                <Clock aria-hidden="true" />
-                {copy.location.schedule}
-              </p>
-              <p>
-                <ArrowUpRight aria-hidden="true" />
-                {copy.location.contact}
-              </p>
-            </div>
-            <a className="bc-button primary" href={`/${lang}#reservations`}>
-              {copy.location.finalCta}
-              <ArrowRight aria-hidden="true" />
-            </a>
-          </div>
-          <div className="map-shell" data-reveal aria-label={copy.location.mapTitle}>
-            <div className="interactive-map" style={{ "--map-scale": mapZoom } as React.CSSProperties}>
-              <div className="map-grid" aria-hidden="true" />
-              <div className="map-district">
-                <span>L&apos;Eixample</span>
-              </div>
-              <div className="map-marker">
-                <MapPin aria-hidden="true" />
-                <span>Example Beach Club</span>
-              </div>
-              <span className="map-street street-diagonal">Avinguda Diagonal</span>
-              <span className="map-street street-gracia">Passeig de Gràcia</span>
-              <span className="map-street street-arago">Carrer d&apos;Aragó</span>
-              <span className="map-street street-balmes">Carrer de Balmes</span>
-            </div>
-            <div className="map-controls">
-              <button type="button" aria-label="Reducir mapa" onClick={() => setMapZoom((zoom) => Math.max(0.86, zoom - 0.12))}>
-                -
-              </button>
-              <button type="button" aria-label="Ampliar mapa" onClick={() => setMapZoom((zoom) => Math.min(1.34, zoom + 0.12))}>
-                +
-              </button>
-              <a href={copy.location.mapSrc} target="_blank" rel="noreferrer">
-                Google Maps
-                <ArrowUpRight aria-hidden="true" />
-              </a>
-            </div>
-          </div>
-        </section>
+        {visibleSections.map((section, index) => (
+          <Fragment key={`${view}-${index}`}>{section}</Fragment>
+        ))}
       </main>
 
       <footer className="bc-footer">
         <div>
-          <a href={`/${lang}#home`} className="bc-mark" aria-label={copy.common.brand}>
+          <a href={pageHref(lang, "home")} className="bc-mark" aria-label={copy.common.brand}>
             <span>EB</span>
             <small>Club</small>
           </a>

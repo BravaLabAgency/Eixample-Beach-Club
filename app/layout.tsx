@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://examplebeachclub.example"),
-  title: "Example Beach Club | Mediterranean lifestyle destination",
+  title: "Eixample Beach Club | Mediterranean lifestyle destination",
   description:
     "A fictional premium Mediterranean beach club with reservations, gastronomy, sunset sessions, DJs and an immersive lifestyle website.",
   icons: {

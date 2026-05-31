@@ -51,5 +51,5 @@ export default async function HomePage({ params }: PageProps) {
 
   const lang = paramLang as Language;
 
-  return <BeachClubPage lang={lang} copy={beachClubCopy[lang]} />;
+  return <BeachClubPage lang={lang} copy={beachClubCopy[lang]} view="home" />;
 }
