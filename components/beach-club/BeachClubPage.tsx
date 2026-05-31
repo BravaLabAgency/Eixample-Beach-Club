@@ -298,7 +298,20 @@ export function BeachClubPage({ lang, copy, view = "home" }: BeachClubPageProps)
 
   const reservationsSection = (
     <section id="reservations" className="reservations-section">
-      <div className="section-intro" data-reveal>
+      <div className="section-intro reservations-intro" data-reveal>
+        <video
+          className="reservations-intro-video"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster={copy.hero.poster}
+          aria-hidden="true"
+        >
+          <source src={copy.hero.video} type="video/mp4" />
+        </video>
+        <div className="reservations-intro-scrim" aria-hidden="true" />
         <p className="bc-eyebrow">{copy.reservations.label}</p>
         <h2>{copy.reservations.title}</h2>
         <p>{copy.reservations.intro}</p>
@@ -627,8 +640,8 @@ export function BeachClubPage({ lang, copy, view = "home" }: BeachClubPageProps)
         </nav>
         <div className="footer-social">
           {copy.footer.social.map((social) => (
-            <a key={social} href="#">
-              {social}
+            <a key={social.label} href={social.href} target="_blank" rel="noreferrer">
+              {social.label}
             </a>
           ))}
         </div>

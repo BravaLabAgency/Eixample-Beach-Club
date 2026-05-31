@@ -33,6 +33,11 @@ type GalleryItem = {
   alt: string;
 };
 
+type SocialLink = {
+  label: string;
+  href: string;
+};
+
 export type BeachClubCopy = {
   metadata: {
     title: string;
@@ -127,7 +132,7 @@ export type BeachClubCopy = {
   };
   footer: {
     line: string;
-    social: string[];
+    social: SocialLink[];
   };
 };
 
@@ -164,6 +169,7 @@ const es: BeachClubCopy = {
     discover: "Descubrir"
   },
   nav: [
+    { label: "Inicio", href: "home" },
     { label: "Experiencia", href: "experience" },
     { label: "Reservas", href: "reservations" },
     { label: "Eventos", href: "events" },
@@ -392,7 +398,10 @@ const es: BeachClubCopy = {
   },
   footer: {
     line: "A fictional Mediterranean beach club shaped as a luxury digital experience.",
-    social: ["Instagram", "TikTok", "Spotify"]
+    social: [
+      { label: "Instagram", href: "https://www.instagram.com" },
+      { label: "TikTok", href: "https://www.tiktok.com" }
+    ]
   }
 };
 
@@ -412,6 +421,7 @@ const ca: BeachClubCopy = {
     book: "Triar escena"
   },
   nav: [
+    { label: "Inici", href: "home" },
     { label: "Experiència", href: "experience" },
     { label: "Reserves", href: "reservations" },
     { label: "Esdeveniments", href: "events" },
@@ -519,6 +529,7 @@ const en: BeachClubCopy = {
     discover: "Discover"
   },
   nav: [
+    { label: "Home", href: "home" },
     { label: "Experience", href: "experience" },
     { label: "Reservations", href: "reservations" },
     { label: "Events", href: "events" },
@@ -657,6 +668,7 @@ const fr: BeachClubCopy = {
     discover: "Découvrir"
   },
   nav: [
+    { label: "Accueil", href: "home" },
     { label: "Expérience", href: "experience" },
     { label: "Réservations", href: "reservations" },
     { label: "Événements", href: "events" },
